@@ -37,6 +37,25 @@
 
 namespace jm {
 
+    template<class Fn>
+    class syscall_function;
+
+    /// \brief A light wrapper around the syscall to provide some type safety
+    template<class R, class... Args>
+    class syscall_function<R(Args...)> {
+        std::uint32_t _id = 0;
+
+    public:
+        /// \brief Initializes the syscall with zero id
+        constexpr syscall_function() noexcept = default;
+
+        /// \brief initializes syscall function with given id
+        constexpr syscall_function(std::uint32_t id) noexcept : _id(id) {}
+
+        /// \brief Performs a syscall with the given arguments
+        JM_INLINE_SYSCALL_FORCEINLINE R operator()(Args... args) const noexcept;
+    };
+
     /// \brief Holds syscall information.
     struct syscall_entry {
         // the syscall id that has to be changed during initialization.
@@ -64,7 +83,7 @@ namespace jm {
         // we instantiate the first entry with 0 hash to be able to get a pointer
         template struct syscall_holder<0>;
 
-    
+
         /* syscall stubs begin here.
          *
          * They all seem more or less the same and that's true, however
@@ -565,6 +584,13 @@ namespace jm {
 
 
     } // namespace detail
+
+    template<class R, class... Args>
+    JM_INLINE_SYSCALL_FORCEINLINE R
+    syscall_function<R(Args...)>::operator()(Args... args) const noexcept
+    {
+        return detail::syscall(_id, args...);
+    }
 
     JM_INLINE_SYSCALL_FORCEINLINE syscall_entry* syscall_entries() noexcept
     {
