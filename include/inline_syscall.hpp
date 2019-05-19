@@ -33,7 +33,11 @@
     JM_INLINE_SYSCALL_FORCEINLINE std::int32_t syscall(__VA_ARGS__) noexcept
 
 
-#define INLINE_SYSCALL(fn)
+// USABLE CODE STARTS HERE -----------------------------------------------------
+
+/// \brief Returns an instance of syscall_function for the given syscall.
+#define INLINE_SYSCALL(fn) \
+    syscall_function { ::jm::detail::syscall_holder<::jm::hash(#fn)>::entry.id }
 
 namespace jm {
 
@@ -71,6 +75,10 @@ namespace jm {
     /// \brief Returns syscall entry array.
     /// \note The last entry is will be zeroed. Use provided operator bool.
     JM_INLINE_SYSCALL_FORCEINLINE syscall_entry* syscall_entries() noexcept;
+
+    /// \brief Hashes the given function name.
+    /// \note Skips first 2 characters (Nt/Zw) to avoid creating duplicate entries.
+    JM_INLINE_SYSCALL_FORCEINLINE constexpr std::uint32_t hash(const char* str) noexcept;
 
     namespace detail {
 
@@ -597,6 +605,20 @@ namespace jm {
         return &detail::syscall_holder<0>::entry;
     }
 
+
+    JM_INLINE_SYSCALL_FORCEINLINE constexpr std::uint32_t hash(const char* str) noexcept
+    {
+        std::uint32_t value = 2166136261;
+
+        str += 2;
+        for(;;) {
+            const char c = *str++;
+            if(!c)
+                return value;
+
+            value = static_cast<std::uint32_t>((value ^ c) * 16777619ull);
+        }
+    }
 } // namespace jm
 
 #endif // JM_INLINE_SYSCALL_HPP
