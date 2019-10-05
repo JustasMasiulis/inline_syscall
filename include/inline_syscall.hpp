@@ -21,7 +21,7 @@
 
 /// \brief Returns an instance of syscall_function for the given syscall.
 #define INLINE_SYSCALL(fn) \
-    syscall_function { ::jm::detail::syscall_holder<::jm::hash(#fn)>::entry.id }
+    ::jm::syscall_function<decltype(fn)> { ::jm::detail::syscall_holder<::jm::hash(#fn)>::entry.id }
 
 #ifndef JM_INLINE_SYSCALL_ENTRY_TYPE
 /// \brief The default syscall entry type is small which doesn't allow retrying initialization.

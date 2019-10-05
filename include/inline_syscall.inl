@@ -44,7 +44,7 @@ namespace jm {
         }
     }
 
-    constexpr syscall_entry_full::syscall_entry_full(std::uint32_t hash_) noexcept 
+    constexpr syscall_entry_full::syscall_entry_full(std::uint32_t hash_) noexcept
         : hash(hash_)
     {}
 
@@ -53,12 +53,16 @@ namespace jm {
         // stores syscall info in a section that we create
         template<std::uint32_t Hash>
         struct syscall_holder {
-            [[gnu::section("_sysc")]] inline static JM_INLINE_SYSCALL_ENTRY_TYPE entry{ Hash };
+            [[gnu::section(
+                "_sysc")]] inline static JM_INLINE_SYSCALL_ENTRY_TYPE entry{ Hash };
         };
 
         // we instantiate the first entry with 0 hash to be able to get a pointer
         template struct syscall_holder<0>;
 
+		// disables register keyword deprecation warnings
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wregister"
 
         /* syscall stubs begin here.
          *
@@ -219,7 +223,7 @@ namespace jm {
                            "=r"(a4),
                            "=c"(unused_output),
                            "=r"(unused_output2)
-                         : "a"(id), "r"(a1), "d"(_2), "r"(a3), "r"(a4), [ a5 ] "rn"(_5)
+                         : "a"(id), "r"(a1), "d"(_2), "r"(a3), "r"(a4), [a5] "rn"(_5)
                          : "memory", "cc");
             return status;
         }
@@ -252,8 +256,8 @@ namespace jm {
                            "d"(_2),
                            "r"(a3),
                            "r"(a4),
-                           [ a5 ] "rn"(_5),
-                           [ a6 ] "rn"(_6)
+                           [a5] "rn"(_5),
+                           [a6] "rn"(_6)
                          : "memory", "cc");
             return status;
         }
@@ -557,6 +561,8 @@ namespace jm {
         }
 
         // clang-format on
+
+#pragma GCC diagnostic pop
 
     } // namespace detail
 
