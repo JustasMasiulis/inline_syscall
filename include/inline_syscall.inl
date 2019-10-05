@@ -574,7 +574,7 @@ namespace jm {
 
     inline JM_INLINE_SYSCALL_ENTRY_TYPE* syscall_entries() noexcept
     {
-        return &detail::syscall_holder<0>::entry;
+        return &detail::syscall_holder<0>::entry + 1;
     }
 
 } // namespace jm
