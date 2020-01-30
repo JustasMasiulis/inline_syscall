@@ -25,11 +25,13 @@
 #define JM_INLINE_SYSCALL_FORCEINLINE __attribute__((always_inline))
 #endif
 
+// helper macro to reduce the typing a bit
 #define JM_INLINE_SYSCALL_STUB(...) \
     JM_INLINE_SYSCALL_FORCEINLINE std::int32_t syscall(__VA_ARGS__) noexcept
 
 namespace jm {
 
+    // hash used for the syscall names
     inline constexpr std::uint32_t hash(const char* str) noexcept
     {
         std::uint32_t value = 2166136261;
@@ -51,6 +53,8 @@ namespace jm {
     namespace detail {
 
         // stores syscall info in a section that we create
+        // Because we store it in its own section we can initialize all values like an
+        // array
         template<std::uint32_t Hash>
         struct syscall_holder {
             [[gnu::section(
@@ -60,7 +64,7 @@ namespace jm {
         // we instantiate the first entry with 0 hash to be able to get a pointer
         template struct syscall_holder<0>;
 
-		// disables register keyword deprecation warnings
+        // disables register keyword deprecation warnings
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wregister"
 
@@ -72,13 +76,13 @@ namespace jm {
 
         JM_INLINE_SYSCALL_STUB(std::uint32_t id)
         {
-            register std::uint64_t a1 asm("r10");
-            std::uint64_t          a2;
-            register std::uint64_t a3 asm("r8");
-            register std::uint64_t a4 asm("r9");
+            register void* a1 asm("r10");
+            void*          a2;
+            register void* a3 asm("r8");
+            register void* a4 asm("r9");
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $40, %%rsp\n"
@@ -99,13 +103,13 @@ namespace jm {
         template<class T1>
         JM_INLINE_SYSCALL_STUB(std::uint32_t id, T1 _1)
         {
-            register auto          a1 asm("r10") = _1;
-            std::uint64_t          a2;
-            register std::uint64_t a3 asm("r8");
-            register std::uint64_t a4 asm("r9");
+            register auto  a1 asm("r10") = _1;
+            void*          a2;
+            register void* a3 asm("r8");
+            register void* a4 asm("r9");
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $40, %%rsp\n"
@@ -126,12 +130,12 @@ namespace jm {
         template<class T1, class T2>
         JM_INLINE_SYSCALL_STUB(std::uint32_t id, T1 _1, T2 _2)
         {
-            register auto          a1 asm("r10") = _1;
-            register std::uint64_t a3 asm("r8");
-            register std::uint64_t a4 asm("r9");
+            register auto  a1 asm("r10") = _1;
+            register void* a3 asm("r8");
+            register void* a4 asm("r9");
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $40, %%rsp\n"
@@ -152,12 +156,12 @@ namespace jm {
         template<class T1, class T2, class T3>
         JM_INLINE_SYSCALL_STUB(std::uint32_t id, T1 _1, T2 _2, T3 _3)
         {
-            register auto          a1 asm("r10") = _1;
-            register auto          a3 asm("r8")  = _3;
-            register std::uint64_t a4 asm("r9");
+            register auto  a1 asm("r10") = _1;
+            register auto  a3 asm("r8")  = _3;
+            register void* a4 asm("r9");
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $40, %%rsp\n"
@@ -182,8 +186,8 @@ namespace jm {
             register auto a3 asm("r8")  = _3;
             register auto a4 asm("r9")  = _4;
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $40, %%rsp\n"
@@ -204,12 +208,13 @@ namespace jm {
         template<class T1, class T2, class T3, class T4, class T5>
         JM_INLINE_SYSCALL_STUB(std::uint32_t id, T1 _1, T2 _2, T3 _3, T4 _4, T5 _5)
         {
+            __debugbreak();
             register auto a1 asm("r10") = _1;
             register auto a3 asm("r8")  = _3;
             register auto a4 asm("r9")  = _4;
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $48, %%rsp\n"
@@ -223,8 +228,13 @@ namespace jm {
                            "=r"(a4),
                            "=c"(unused_output),
                            "=r"(unused_output2)
-                         : "a"(id), "r"(a1), "d"(_2), "r"(a3), "r"(a4), [a5] "rn"(_5)
-                         : "memory", "cc");
+                         : "a"(id),
+                           "r"(a1),
+                           "d"(_2),
+                           "r"(a3),
+                           "r"(a4),
+                           [ a5 ] "rn"(reinterpret_cast<void*>(_5))
+                         : "cc");
             return status;
         }
 
@@ -235,8 +245,8 @@ namespace jm {
             register auto a3 asm("r8")  = _3;
             register auto a4 asm("r9")  = _4;
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $64, %%rsp\n"
@@ -252,12 +262,12 @@ namespace jm {
                            "=c"(unused_output),
                            "=r"(unused_output2)
                          : "a"(id),
-                           "r"(a1),
+                           "r"(a1)),
                            "d"(_2),
                            "r"(a3),
                            "r"(a4),
-                           [a5] "rn"(_5),
-                           [a6] "rn"(_6)
+                           [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
+                           [ a6 ] "rn"(reinterpret_cast<void*>(_6))
                          : "memory", "cc");
             return status;
         }
@@ -271,8 +281,8 @@ namespace jm {
             register auto a3 asm("r8")  = _3;
             register auto a4 asm("r9")  = _4;
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $64, %%rsp\n"
@@ -289,13 +299,13 @@ namespace jm {
                         "=c"(unused_output),
                         "=r"(unused_output2)
                         : "a"(id),
-                        "r"(a1),
-                        "d"(_2),
-                        "r"(a3),
-                        "r"(a4),
-                        [ a5 ] "rn"(_5),
-                        [ a6 ] "rn"(_6),
-                        [ a7 ] "rn"(_7)
+                           "r"(a1),
+                           "d"(_2),
+                           "r"(a3),
+                           "r"(a4),
+                           [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
+                           [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
+                           [ a7 ] "rn"(reinterpret_cast<void*>(_7))
                         : "memory", "cc");
             return status;
         }
@@ -307,8 +317,8 @@ namespace jm {
             register auto a3 asm("r8")  = _3;
             register auto a4 asm("r9")  = _4;
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $80, %%rsp\n"
@@ -330,10 +340,10 @@ namespace jm {
                         "d"(_2),
                         "r"(a3),
                         "r"(a4),
-                        [ a5 ] "rn"(_5),
-                        [ a6 ] "rn"(_6),
-                        [ a7 ] "rn"(_7),
-                        [ a8 ] "rn"(_8)
+                        [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
+                        [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
+                        [ a7 ] "rn"(reinterpret_cast<void*>(_7)),
+                        [ a8 ] "rn"(reinterpret_cast<void*>(_8))
                         : "memory", "cc");
             return status;
         }
@@ -345,8 +355,8 @@ namespace jm {
             register auto a3 asm("r8")  = _3;
             register auto a4 asm("r9")  = _4;
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $80, %%rsp\n"
@@ -369,11 +379,11 @@ namespace jm {
                         "d"(_2),
                         "r"(a3),
                         "r"(a4),
-                        [ a5 ] "rn"(_5),
-                        [ a6 ] "rn"(_6),
-                        [ a7 ] "rn"(_7),
-                        [ a8 ] "rn"(_8),
-                        [ a9 ] "rn"(_9)
+                        [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
+                        [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
+                        [ a7 ] "rn"(reinterpret_cast<void*>(_7)),
+                        [ a8 ] "rn"(reinterpret_cast<void*>(_8)),
+                        [ a9 ] "rn"(reinterpret_cast<void*>(_9))
                         : "memory", "cc");
             return status;
         }
@@ -386,8 +396,8 @@ namespace jm {
             register auto a3 asm("r8")  = _3;
             register auto a4 asm("r9")  = _4;
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $96, %%rsp\n"
@@ -411,12 +421,12 @@ namespace jm {
                         "d"(_2),
                         "r"(a3),
                         "r"(a4),
-                        [ a5 ] "rn"(_5),
-                        [ a6 ] "rn"(_6),
-                        [ a7 ] "rn"(_7),
-                        [ a8 ] "rn"(_8),
-                        [ a9 ] "rn"(_9),
-                        [ a10 ] "rn"(_10)
+                        [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
+                        [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
+                        [ a7 ] "rn"(reinterpret_cast<void*>(_7)),
+                        [ a8 ] "rn"(reinterpret_cast<void*>(_8)),
+                        [ a9 ] "rn"(reinterpret_cast<void*>(_9)),
+                        [ a10 ] "rn"(reinterpret_cast<void*>(_10))
                         : "memory", "cc");
             return status;
         }
@@ -428,8 +438,8 @@ namespace jm {
             register auto a3 asm("r8")  = _3;
             register auto a4 asm("r9")  = _4;
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $96, %%rsp\n"
@@ -454,13 +464,13 @@ namespace jm {
                         "d"(_2),
                         "r"(a3),
                         "r"(a4),
-                        [ a5 ] "rn"(_5),
-                        [ a6 ] "rn"(_6),
-                        [ a7 ] "rn"(_7),
-                        [ a8 ] "rn"(_8),
-                        [ a9 ] "rn"(_9),
-                        [ a10 ] "rn"(_10),
-                        [ a11 ] "rn"(_11)
+                        [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
+                        [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
+                        [ a7 ] "rn"(reinterpret_cast<void*>(_7)),
+                        [ a8 ] "rn"(reinterpret_cast<void*>(_8)),
+                        [ a9 ] "rn"(reinterpret_cast<void*>(_9)),
+                        [ a10 ] "rn"(reinterpret_cast<void*>(_10)),
+                        [ a11 ] "rn"(reinterpret_cast<void*>(_11))
                         : "memory", "cc");
             return status;
         }
@@ -472,8 +482,8 @@ namespace jm {
             register auto a3 asm("r8")  = _3;
             register auto a4 asm("r9")  = _4;
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $112, %%rsp\n"
@@ -499,14 +509,14 @@ namespace jm {
                         "d"(_2),
                         "r"(a3),
                         "r"(a4),
-                        [ a5 ] "rn"(_5),
-                        [ a6 ] "rn"(_6),
-                        [ a7 ] "rn"(_7),
-                        [ a8 ] "rn"(_8),
-                        [ a9 ] "rn"(_9),
-                        [ a10 ] "rn"(_10),
-                        [ a11 ] "rn"(_11),
-                        [ a12 ] "rn"(_12)
+                        [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
+                        [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
+                        [ a7 ] "rn"(reinterpret_cast<void*>(_7)),
+                        [ a8 ] "rn"(reinterpret_cast<void*>(_8)),
+                        [ a9 ] "rn"(reinterpret_cast<void*>(_9)),
+                        [ a10 ] "rn"(reinterpret_cast<void*>(_10)),
+                        [ a11 ] "rn"(reinterpret_cast<void*>(_11)),
+                        [ a12 ] "rn"(reinterpret_cast<void*>(_12))
                         : "memory", "cc");
             return status;
         }
@@ -519,8 +529,8 @@ namespace jm {
             register auto a3 asm("r8")  = _3;
             register auto a4 asm("r9")  = _4;
 
-            std::uint64_t          unused_output;
-            register std::uint64_t unused_output2 asm("r11");
+            void*          unused_output;
+            register void* unused_output2 asm("r11");
 
             std::int32_t status;
             asm volatile("sub $112, %%rsp\n"
@@ -547,15 +557,15 @@ namespace jm {
                         "d"(_2),
                         "r"(a3),
                         "r"(a4),
-                        [ a5 ] "rn"(_5),
-                        [ a6 ] "rn"(_6),
-                        [ a7 ] "rn"(_7),
-                        [ a8 ] "rn"(_8),
-                        [ a9 ] "rn"(_9),
-                        [ a10 ] "rn"(_10),
-                        [ a11 ] "rn"(_11),
-                        [ a12 ] "rn"(_12),
-                        [ a13 ] "rn"(_13)
+                        [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
+                        [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
+                        [ a7 ] "rn"(reinterpret_cast<void*>(_7)),
+                        [ a8 ] "rn"(reinterpret_cast<void*>(_8)),
+                        [ a9 ] "rn"(reinterpret_cast<void*>(_9)),
+                        [ a10 ] "rn"(reinterpret_cast<void*>(_10)),
+                        [ a11 ] "rn"(reinterpret_cast<void*>(_11)),
+                        [ a12 ] "rn"(reinterpret_cast<void*>(_12)),
+                        [ a13 ] "rn"(reinterpret_cast<void*>(_13))
                         : "memory", "cc");
             return status;
         }
