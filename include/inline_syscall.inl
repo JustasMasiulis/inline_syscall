@@ -262,7 +262,7 @@ namespace jm {
                            "=c"(unused_output),
                            "=r"(unused_output2)
                          : "a"(id),
-                           "r"(a1)),
+                           "r"(a1),
                            "d"(_2),
                            "r"(a3),
                            "r"(a4),
