@@ -22,7 +22,7 @@
 
 namespace jm {
 
-	/// \brief Initializes syscalls list.
+    /// \brief Initializes syscalls list.
     inline void init_syscalls_list();
 
     namespace detail {
@@ -117,7 +117,8 @@ namespace jm {
             IMAGE_OPTIONAL_HEADER64 OptionalHeader;
         };
 
-        inline const IMAGE_NT_HEADERS* nt_headers(const char* base) noexcept
+        JM_INLINE_SYSCALL_FORCEINLINE const IMAGE_NT_HEADERS* nt_headers(
+            const char* base) noexcept
         {
             return reinterpret_cast<const IMAGE_NT_HEADERS*>(
                 base + reinterpret_cast<const IMAGE_DOS_HEADER*>(base)->e_lfanew);
@@ -130,7 +131,8 @@ namespace jm {
         public:
             using size_type = unsigned long;
 
-            exports_directory(const char* base) noexcept : _base(base)
+            JM_INLINE_SYSCALL_FORCEINLINE exports_directory(const char* base) noexcept
+                : _base(base)
             {
                 const auto ied_data_dir =
                     nt_headers(base)->OptionalHeader.DataDirectory[0];
@@ -138,16 +140,20 @@ namespace jm {
                     base + ied_data_dir.VirtualAddress);
             }
 
-            size_type size() const noexcept { return _ied->NumberOfNames; }
+            JM_INLINE_SYSCALL_FORCEINLINE size_type size() const noexcept
+            {
+                return _ied->NumberOfNames;
+            }
 
-            const char* name(size_type index) const noexcept
+            JM_INLINE_SYSCALL_FORCEINLINE const char* name(size_type index) const noexcept
             {
                 return reinterpret_cast<const char*>(
                     _base + reinterpret_cast<const unsigned long*>(
                                 _base + _ied->AddressOfNames)[index]);
             }
 
-            const char* address(size_type index) const noexcept
+            JM_INLINE_SYSCALL_FORCEINLINE const char* address(size_type index) const
+                noexcept
             {
                 const auto* const rva_table = reinterpret_cast<const unsigned long*>(
                     _base + _ied->AddressOfFunctions);
@@ -159,7 +165,7 @@ namespace jm {
             }
         };
 
-        const void* ntdll_base() noexcept
+        JM_INLINE_SYSCALL_FORCEINLINE const void* ntdll_base() noexcept
         {
             struct ldr_entry_t {
                 ldr_entry_t* Flink;
@@ -181,14 +187,15 @@ namespace jm {
 
     } // namespace detail
 
-    inline void init_syscalls_list()
+    JM_INLINE_SYSCALL_FORCEINLINE void init_syscalls_list()
     {
         detail::exports_directory exports(static_cast<const char*>(detail::ntdll_base()));
         for(auto i = exports.size();; --i) {
             auto entry = jm::syscall_entries();
             while(entry->hash != 0) {
                 if(jm::hash(exports.name(i)) == entry->hash) {
-                    entry->id = *reinterpret_cast<const std::int32_t*>(exports.address(i) + 4);
+                    entry->id =
+                        *reinterpret_cast<const std::int32_t*>(exports.address(i) + 4);
                     break;
                 }
                 ++entry;
