@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Justas Masiulis
+ * Copyright 2018-2020 Justas Masiulis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -187,6 +187,9 @@ namespace jm {
 
     } // namespace detail
 
+    /// \brief Initializes syscall ids with information from ntdll.dll loaded in current
+    ///        process.
+    /// \warning THIS DOES NOT INITIALIZE SYSCALLS FROM USER32.DLL / NtUser*
     JM_INLINE_SYSCALL_FORCEINLINE void init_syscalls_list()
     {
         detail::exports_directory exports(static_cast<const char*>(detail::ntdll_base()));

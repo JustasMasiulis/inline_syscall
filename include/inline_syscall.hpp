@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Justas Masiulis
+ * Copyright 2018-2020 Justas Masiulis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,32 @@
 #include <cstdint>
 
 /// \brief Returns an instance of syscall_function for the given syscall.
-#define INLINE_SYSCALL(fn) \
-    ::jm::syscall_function<decltype(fn)> { ::jm::detail::syscall_holder<::jm::hash(#fn)>::entry.id }
+/// \param function_type A function pointer whose type and name match the corresponding
+///                      syscall.
+#define INLINE_SYSCALL(function_pointer) \
+    INLINE_SYSCALL_MANUAL(               \
+        function_pointer,                \
+        ::jm::detail::syscall_holder<::jm::hash(#function_pointer)>::entry.id)
+
+/// \brief Returns an instance of syscall_function for the given syscall.
+/// \param function_type A function type whose name matches the corresponding syscall.
+#define INLINE_SYSCALL_T(function_type)                                    \
+    ::jm::syscall_function<function_type>                                  \
+    {                                                                      \
+        ::jm::detail::syscall_holder<::jm::hash(#function_type)>::entry.id \
+    }
+
+/// \brief Returns an instance of syscall_function for the given syscall id.
+/// \param function_pointer A function pointer whose type matches the corresponding syscall.
+/// \param syscall_id The id of the syscall specified by function_pointer.
+/// \note There is no INLINE_SYSCALL_MANUAL_T because you can just write
+///       jm::inline_syscall<function_type>{id}
+#define INLINE_SYSCALL_MANUAL(function_pointer, syscall_id) \
+    ::jm::syscall_function<decltype(function_pointer)> { syscall_id }
 
 #ifndef JM_INLINE_SYSCALL_ENTRY_TYPE
-/// \brief The default syscall entry type is small which doesn't allow retrying initialization.
+/// \brief The default syscall entry type is small which doesn't allow retrying
+/// initialization.
 #define JM_INLINE_SYSCALL_ENTRY_TYPE ::jm::syscall_entry_small
 #endif
 
