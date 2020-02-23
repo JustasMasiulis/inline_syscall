@@ -44,7 +44,7 @@ add rsp,40h                                 ; restoring stack
 ## Creating your own initialization function
 This library enables you to create your own custom initialization routines that are more resilent against missing syscalls or acquire syscall ids in some other way.
 
-`JM_INLINE_SYSCALL_ENTRY_TYPE` can be defined with your own syscall entry type that needs to have `hash` field. By default `syscall_entry_small` is used, but `syscall_entry_full` is also shipped.
+`JM_INLINE_SYSCALL_ENTRY_TYPE` can be defined with your own syscall entry type that needs to be constructible from a hash. By default `syscall_entry_small` is used, but `syscall_entry_full` is also shipped.
 
 If you want to use the provided `INLINE_SYSCALL` macro you will need to use the provided `jm::hash` function.
 
