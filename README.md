@@ -39,7 +39,7 @@ add rsp,40h                                 ; restoring stack
 * Q: What are the main uses of this? A: Obfuscation and hook avoidance.
 * Q: Why would I use this over some other library? A: The code this generates can be inlined and it is optimized for every single parameter count as much as possible.
 * Q: Why can't this work on MSVC? A: MSVC doesn't support GCC style inline assembly which can be properly optimized and worked on by compiler.
-* Q: Why can't this work on GCC? A: Contrary to MSVC GCC is too good at optimizing inline assembly and as such breaks my code that tries to be somewhat generic.
+* Q: Why can't this work on GCC? A: Contrary to MSVC, GCC is too good at optimizing inline assembly and as such breaks my code that tries to be somewhat generic.
 
 ## Creating your own initialization function
 This library enables you to create your own custom initialization routines that are more resilent against missing syscalls or acquire syscall ids in some other way.
