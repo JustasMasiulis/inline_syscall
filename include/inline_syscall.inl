@@ -208,7 +208,6 @@ namespace jm {
         template<class T1, class T2, class T3, class T4, class T5>
         JM_INLINE_SYSCALL_STUB(std::uint32_t id, T1 _1, T2 _2, T3 _3, T4 _4, T5 _5)
         {
-            __debugbreak();
             register auto a1 asm("r10") = _1;
             register auto a3 asm("r8")  = _3;
             register auto a4 asm("r9")  = _4;
