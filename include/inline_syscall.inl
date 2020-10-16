@@ -85,9 +85,7 @@ namespace jm {
             register void* unused_output2 asm("r11");
 
             std::int32_t status;
-            asm volatile("sub $40, %%rsp\n"
-                         "syscall\n"
-                         "add $40, %%rsp"
+            asm volatile("syscall\n"
                          : "=a"(status),
                            "=r"(a1),
                            "=d"(a2),
@@ -112,9 +110,7 @@ namespace jm {
             register void* unused_output2 asm("r11");
 
             std::int32_t status;
-            asm volatile("sub $40, %%rsp\n"
-                         "syscall\n"
-                         "add $40, %%rsp"
+            asm volatile("syscall\n"
                          : "=a"(status),
                            "=r"(a1),
                            "=d"(a2),
@@ -138,9 +134,7 @@ namespace jm {
             register void* unused_output2 asm("r11");
 
             std::int32_t status;
-            asm volatile("sub $40, %%rsp\n"
-                         "syscall\n"
-                         "add $40, %%rsp"
+            asm volatile("syscall\n"
                          : "=a"(status),
                            "=r"(a1),
                            "=d"(_2),
@@ -164,9 +158,7 @@ namespace jm {
             register void* unused_output2 asm("r11");
 
             std::int32_t status;
-            asm volatile("sub $40, %%rsp\n"
-                         "syscall\n"
-                         "add $40, %%rsp"
+            asm volatile("syscall\n"
                          : "=a"(status),
                            "=r"(a1),
                            "=d"(_2),
@@ -190,9 +182,7 @@ namespace jm {
             register void* unused_output2 asm("r11");
 
             std::int32_t status;
-            asm volatile("sub $40, %%rsp\n"
-                         "syscall\n"
-                         "add $40, %%rsp"
+            asm volatile("syscall\n"
                          : "=a"(status),
                            "=r"(a1),
                            "=d"(_2),
@@ -232,7 +222,7 @@ namespace jm {
                            "d"(_2),
                            "r"(a3),
                            "r"(a4),
-                           [ a5 ] "rn"(reinterpret_cast<void*>(_5))
+                           [ a5 ] "reZ"(reinterpret_cast<void*>(_5))
                          : "cc");
             return status;
         }
@@ -265,8 +255,8 @@ namespace jm {
                            "d"(_2),
                            "r"(a3),
                            "r"(a4),
-                           [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
-                           [ a6 ] "rn"(reinterpret_cast<void*>(_6))
+                           [ a5 ] "reZ"(reinterpret_cast<void*>(_5)),
+                           [ a6 ] "reZ"(reinterpret_cast<void*>(_6))
                          : "memory", "cc");
             return status;
         }
@@ -302,9 +292,9 @@ namespace jm {
                            "d"(_2),
                            "r"(a3),
                            "r"(a4),
-                           [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
-                           [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
-                           [ a7 ] "rn"(reinterpret_cast<void*>(_7))
+                           [ a5 ] "reZ"(reinterpret_cast<void*>(_5)),
+                           [ a6 ] "reZ"(reinterpret_cast<void*>(_6)),
+                           [ a7 ] "reZ"(reinterpret_cast<void*>(_7))
                         : "memory", "cc");
             return status;
         }
@@ -339,10 +329,10 @@ namespace jm {
                         "d"(_2),
                         "r"(a3),
                         "r"(a4),
-                        [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
-                        [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
-                        [ a7 ] "rn"(reinterpret_cast<void*>(_7)),
-                        [ a8 ] "rn"(reinterpret_cast<void*>(_8))
+                        [ a5 ] "reZ"(reinterpret_cast<void*>(_5)),
+                        [ a6 ] "reZ"(reinterpret_cast<void*>(_6)),
+                        [ a7 ] "reZ"(reinterpret_cast<void*>(_7)),
+                        [ a8 ] "reZ"(reinterpret_cast<void*>(_8))
                         : "memory", "cc");
             return status;
         }
@@ -378,11 +368,11 @@ namespace jm {
                         "d"(_2),
                         "r"(a3),
                         "r"(a4),
-                        [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
-                        [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
-                        [ a7 ] "rn"(reinterpret_cast<void*>(_7)),
-                        [ a8 ] "rn"(reinterpret_cast<void*>(_8)),
-                        [ a9 ] "rn"(reinterpret_cast<void*>(_9))
+                        [ a5 ] "reZ"(reinterpret_cast<void*>(_5)),
+                        [ a6 ] "reZ"(reinterpret_cast<void*>(_6)),
+                        [ a7 ] "reZ"(reinterpret_cast<void*>(_7)),
+                        [ a8 ] "reZ"(reinterpret_cast<void*>(_8)),
+                        [ a9 ] "reZ"(reinterpret_cast<void*>(_9))
                         : "memory", "cc");
             return status;
         }
@@ -420,12 +410,12 @@ namespace jm {
                         "d"(_2),
                         "r"(a3),
                         "r"(a4),
-                        [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
-                        [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
-                        [ a7 ] "rn"(reinterpret_cast<void*>(_7)),
-                        [ a8 ] "rn"(reinterpret_cast<void*>(_8)),
-                        [ a9 ] "rn"(reinterpret_cast<void*>(_9)),
-                        [ a10 ] "rn"(reinterpret_cast<void*>(_10))
+                        [ a5 ] "reZ"(reinterpret_cast<void*>(_5)),
+                        [ a6 ] "reZ"(reinterpret_cast<void*>(_6)),
+                        [ a7 ] "reZ"(reinterpret_cast<void*>(_7)),
+                        [ a8 ] "reZ"(reinterpret_cast<void*>(_8)),
+                        [ a9 ] "reZ"(reinterpret_cast<void*>(_9)),
+                        [ a10 ] "reZ"(reinterpret_cast<void*>(_10))
                         : "memory", "cc");
             return status;
         }
@@ -463,13 +453,13 @@ namespace jm {
                         "d"(_2),
                         "r"(a3),
                         "r"(a4),
-                        [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
-                        [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
-                        [ a7 ] "rn"(reinterpret_cast<void*>(_7)),
-                        [ a8 ] "rn"(reinterpret_cast<void*>(_8)),
-                        [ a9 ] "rn"(reinterpret_cast<void*>(_9)),
-                        [ a10 ] "rn"(reinterpret_cast<void*>(_10)),
-                        [ a11 ] "rn"(reinterpret_cast<void*>(_11))
+                        [ a5 ] "reZ"(reinterpret_cast<void*>(_5)),
+                        [ a6 ] "reZ"(reinterpret_cast<void*>(_6)),
+                        [ a7 ] "reZ"(reinterpret_cast<void*>(_7)),
+                        [ a8 ] "reZ"(reinterpret_cast<void*>(_8)),
+                        [ a9 ] "reZ"(reinterpret_cast<void*>(_9)),
+                        [ a10 ] "reZ"(reinterpret_cast<void*>(_10)),
+                        [ a11 ] "reZ"(reinterpret_cast<void*>(_11))
                         : "memory", "cc");
             return status;
         }
@@ -508,14 +498,14 @@ namespace jm {
                         "d"(_2),
                         "r"(a3),
                         "r"(a4),
-                        [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
-                        [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
-                        [ a7 ] "rn"(reinterpret_cast<void*>(_7)),
-                        [ a8 ] "rn"(reinterpret_cast<void*>(_8)),
-                        [ a9 ] "rn"(reinterpret_cast<void*>(_9)),
-                        [ a10 ] "rn"(reinterpret_cast<void*>(_10)),
-                        [ a11 ] "rn"(reinterpret_cast<void*>(_11)),
-                        [ a12 ] "rn"(reinterpret_cast<void*>(_12))
+                        [ a5 ] "reZ"(reinterpret_cast<void*>(_5)),
+                        [ a6 ] "reZ"(reinterpret_cast<void*>(_6)),
+                        [ a7 ] "reZ"(reinterpret_cast<void*>(_7)),
+                        [ a8 ] "reZ"(reinterpret_cast<void*>(_8)),
+                        [ a9 ] "reZ"(reinterpret_cast<void*>(_9)),
+                        [ a10 ] "reZ"(reinterpret_cast<void*>(_10)),
+                        [ a11 ] "reZ"(reinterpret_cast<void*>(_11)),
+                        [ a12 ] "reZ"(reinterpret_cast<void*>(_12))
                         : "memory", "cc");
             return status;
         }
@@ -556,15 +546,15 @@ namespace jm {
                         "d"(_2),
                         "r"(a3),
                         "r"(a4),
-                        [ a5 ] "rn"(reinterpret_cast<void*>(_5)),
-                        [ a6 ] "rn"(reinterpret_cast<void*>(_6)),
-                        [ a7 ] "rn"(reinterpret_cast<void*>(_7)),
-                        [ a8 ] "rn"(reinterpret_cast<void*>(_8)),
-                        [ a9 ] "rn"(reinterpret_cast<void*>(_9)),
-                        [ a10 ] "rn"(reinterpret_cast<void*>(_10)),
-                        [ a11 ] "rn"(reinterpret_cast<void*>(_11)),
-                        [ a12 ] "rn"(reinterpret_cast<void*>(_12)),
-                        [ a13 ] "rn"(reinterpret_cast<void*>(_13))
+                        [ a5 ] "reZ"(reinterpret_cast<void*>(_5)),
+                        [ a6 ] "reZ"(reinterpret_cast<void*>(_6)),
+                        [ a7 ] "reZ"(reinterpret_cast<void*>(_7)),
+                        [ a8 ] "reZ"(reinterpret_cast<void*>(_8)),
+                        [ a9 ] "reZ"(reinterpret_cast<void*>(_9)),
+                        [ a10 ] "reZ"(reinterpret_cast<void*>(_10)),
+                        [ a11 ] "reZ"(reinterpret_cast<void*>(_11)),
+                        [ a12 ] "reZ"(reinterpret_cast<void*>(_12)),
+                        [ a13 ] "reZ"(reinterpret_cast<void*>(_13))
                         : "memory", "cc");
             return status;
         }
