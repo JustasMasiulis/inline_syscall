@@ -193,7 +193,7 @@ namespace jm {
     JM_INLINE_SYSCALL_FORCEINLINE void init_syscalls_list()
     {
         detail::exports_directory exports(static_cast<const char*>(detail::ntdll_base()));
-        for(auto i = exports.size();; --i) {
+        for(auto i = exports.size() - 1;; --i) {
             auto entry = jm::syscall_entries();
             while(entry->hash != 0) {
                 if(jm::hash(exports.name(i)) == entry->hash) {
