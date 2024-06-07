@@ -21,10 +21,8 @@
 
 #if defined(_MSC_VER)
 #define JM_INLINE_SYSCALL_FORCEINLINE __forceinline
-#define JM_INLINE_SYSCALL_RETAIN
 #else
 #define JM_INLINE_SYSCALL_FORCEINLINE __attribute__((always_inline))
-#define JM_INLINE_SYSCALL_RETAIN      __attribute__((retain))
 #endif
 
 // helper macro to reduce the typing a bit
@@ -60,7 +58,7 @@ namespace jm {
         template<std::uint32_t Hash>
         struct syscall_holder {
             [[gnu::section(
-                "_sysc")]] JM_INLINE_SYSCALL_RETAIN inline static JM_INLINE_SYSCALL_ENTRY_TYPE entry{ Hash };
+                "_sysc"), gnu::retain]] inline static JM_INLINE_SYSCALL_ENTRY_TYPE entry{ Hash };
         };
 
         // we instantiate the first entry with 0 hash to be able to get a pointer
