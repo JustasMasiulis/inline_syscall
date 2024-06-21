@@ -58,7 +58,7 @@ namespace jm {
         template<std::uint32_t Hash>
         struct syscall_holder {
             [[gnu::section(
-                "_sysc")]] inline static JM_INLINE_SYSCALL_ENTRY_TYPE entry{ Hash };
+                "_sysc"), gnu::retain]] inline static JM_INLINE_SYSCALL_ENTRY_TYPE entry{ Hash };
         };
 
         // we instantiate the first entry with 0 hash to be able to get a pointer
